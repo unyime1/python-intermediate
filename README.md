@@ -1,6 +1,6 @@
 # KodeCamp Python Intermediate repo
 
-This repo contains the codebase for lecture 2 of the python intermediate class.
+This repo contains the codebase of the Kodecamp python intermediate class.
 
 To get started:
 1. Clone the repo.
