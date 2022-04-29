@@ -9,7 +9,7 @@ client = TestClient(app)
 def test_create_item():
     response = client.post(
         "/items/",
-        headers={"X-Token": "coneofsilence"},
+        headers={"x-token": "coneofsilence"},
         json={"id": "foobar", "title": "Foo Bar", "description": "The Foo Barters"},
     )
     assert response.status_code == 200
