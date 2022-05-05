@@ -1,0 +1,29 @@
+# server
+fastapi[all]==0.74.1
+Jinja2==3.1.1
+
+# code formatting
+flake8==4.0.1
+black==22.3.0
+
+# database
+aerich==0.6.3
+redis==4.2.2
+tortoise-orm[asyncpg]==0.19.0
+
+# unit/integration tests
+pytest==7.1.1
+pytest-asyncio==0.18.3
+httpx==0.22.0
+asgi-lifespan==1.0.1
+asynctest==0.13.0
+
+# Password Hashing/ Authentication
+passlib[bcrypt]==1.7.4
+python-jose[cryptography]==3.3.0
+
+# AWS
+boto3==1.21.42
+
+# Numerical Computing
+numpy==1.22.3
