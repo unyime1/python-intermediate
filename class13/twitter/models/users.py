@@ -5,6 +5,7 @@ from models.base import BaseModel
 
 class User(BaseModel):
     """User table"""
+
     username = fields.CharField(max_length=50, null=True)
     email = fields.CharField(max_length=100, null=True)
     first_name = fields.CharField(max_length=100, null=True)

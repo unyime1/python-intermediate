@@ -5,6 +5,7 @@ from models.base import BaseModel
 
 class Tweet(BaseModel):
     """User tweet"""
+
     user = fields.ForeignKeyField(
         "models.User", related_name="tweets", null=True
     )
@@ -13,6 +14,7 @@ class Tweet(BaseModel):
 
 class Like(BaseModel):
     """Tweet likes"""
+
     tweet = fields.ForeignKeyField(
         "models.Tweet", related_name="likes", null=True
     )
@@ -23,6 +25,7 @@ class Like(BaseModel):
 
 class Comment(BaseModel):
     """Tweet comment"""
+
     tweet = fields.ForeignKeyField(
         "models.Tweet", related_name="comments", null=True
     )
@@ -34,6 +37,7 @@ class Comment(BaseModel):
 
 class Media(BaseModel):
     """Tweet media"""
+
     tweet = fields.ForeignKeyField(
         "models.Tweet", related_name="medias", null=True
     )

@@ -9,7 +9,7 @@ from config import (
     POSTGRES_PASSWORD,
     POSTGRES_SERVER,
     POSTGRES_PORT,
-    POSTGRES_DB
+    POSTGRES_DB,
 )
 
 logger = logging.getLogger(__name__)
@@ -38,12 +38,13 @@ TORTOISE_ORM = {
     },
 }
 
+
 async def init_db(app: FastAPI) -> None:
     """Initialize database."""
     try:
         register_tortoise(
             app,
-            db_url=f"postgres://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_SERVER}:{POSTGRES_PORT}/{POSTGRES_DB}",
+            db_url=f"postgres://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_SERVER}:{POSTGRES_PORT}/{POSTGRES_DB}",  # noqa
             modules={"models": MODELS},
             generate_schemas=False,
             add_exception_handlers=True,
