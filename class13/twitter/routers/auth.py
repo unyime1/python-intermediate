@@ -1,10 +1,15 @@
+from datetime import datetime, timedelta, timezone
 from uuid import UUID
+from jose import jwt
 from fastapi import APIRouter, Path, HTTPException, status
 from passlib.context import CryptContext
 
 from library.schemas.register import UserCreate, UserPublic
 from models.users import User
 from library.security.otp import otp_manager
+from library.schemas.auth import LoginSchema, JWTSchema, AuthResponse
+
+from config import SECRET_KEY, ALGORITHM
 
 
 router = APIRouter(prefix="/auth")
@@ -44,3 +49,40 @@ async def verify(otp: str = Path(...)):
         email_verified=True
     )
     return await User.get(id=UUID(user_id))
+
+
+@router.post("/login/", response_model=AuthResponse)
+async  def login(data: LoginSchema):
+    """Handle user login."""
+    user = await User.get_or_none(email=data.username_or_email)
+    
+    # Extract User.
+    if user is None:
+        user = await User.get_or_none(username=data.username_or_email)
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Your authentication credentials is incorrect."
+        )
+    # Check password.
+    hashed_password = user.hashed_password
+    is_valid_password: bool = pwd_context.verify(data.password, hashed_password)
+    if is_valid_password is False:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Your authentication credentials is incorrect."
+        )
+    
+    # Generate an auth token.
+    jwt_data = JWTSchema(
+        user_id=str(user.id) 
+    )
+    to_encode = jwt_data.dict()
+    # expire = datetime.now(timezone.utc) + timedelta(days=30)
+    # to_encode.update({"expire": expire})
+
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return AuthResponse(
+        user=user,
+        token=encoded_jwt
+    )
