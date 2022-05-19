@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from library.database.database import create_start_app_handler
 from routers.auth import router as AuthRouter
 from routers.content import router as ContentRouter
+from routers.user import router as UsersRouter
 
 
 def get_application():
@@ -14,6 +15,7 @@ def get_application():
     app.add_event_handler("startup", create_start_app_handler(app))
     app.include_router(AuthRouter)
     app.include_router(ContentRouter)
+    app.include_router(UsersRouter)
 
     return app
 

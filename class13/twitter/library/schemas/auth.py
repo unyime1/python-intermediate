@@ -12,7 +12,7 @@ class LoginSchema(BaseModel):
 
 class JWTSchema(BaseModel):
     user_id: str
-    # expire: Optional[datetime]
+    expire: Optional[datetime]
 
 
 class AuthResponse(BaseModel):

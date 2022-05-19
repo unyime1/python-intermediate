@@ -64,6 +64,7 @@ async  def login(data: LoginSchema):
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Your authentication credentials is incorrect."
         )
+
     # Check password.
     hashed_password = user.hashed_password
     is_valid_password: bool = pwd_context.verify(data.password, hashed_password)
@@ -78,8 +79,8 @@ async  def login(data: LoginSchema):
         user_id=str(user.id) 
     )
     to_encode = jwt_data.dict()
-    # expire = datetime.now(timezone.utc) + timedelta(days=30)
-    # to_encode.update({"expire": expire})
+    expire = datetime.now(timezone.utc) + timedelta(days=30)
+    to_encode.update({"expire": str(expire)})
 
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return AuthResponse(
