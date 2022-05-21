@@ -10,6 +10,7 @@ from config import (
     POSTGRES_SERVER,
     POSTGRES_PORT,
     POSTGRES_DB,
+    DATABASE_URL,
 )
 
 logger = logging.getLogger(__name__)
@@ -44,7 +45,7 @@ async def init_db(app: FastAPI) -> None:
     try:
         register_tortoise(
             app,
-            db_url=f"postgres://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_SERVER}:{POSTGRES_PORT}/{POSTGRES_DB}",  # noqa
+            db_url=DATABASE_URL,
             modules={"models": MODELS},
             generate_schemas=False,
             add_exception_handlers=True,

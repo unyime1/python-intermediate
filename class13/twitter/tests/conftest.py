@@ -6,12 +6,16 @@ from fastapi import FastAPI
 from asgi_lifespan import LifespanManager
 from httpx import AsyncClient
 from tortoise.contrib.fastapi import register_tortoise
+from passlib.context import CryptContext
 
 from server import get_application
 
 from config import DATABASE_URL
 from models.contents import Tweet, Like, Media, Comment
 from models.users import User, Picture
+
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 @pytest.fixture(scope="module")
@@ -70,4 +74,27 @@ async def clean_database():
 @pytest.fixture(autouse=True)
 def clean_redis():
     r = redis.Redis(host="redis", port=6379)
-    r.flushall()    
+    r.flushall()
+
+
+@pytest.fixture()
+async def test_user():
+    user_password = "testing456"
+    hashed_password = pwd_context.hash(user_password)
+
+    username = ("username",)
+    email = "email@email.com"
+
+    email_exists = await User.filter(email=email).exists()
+    username_exists = await User.filter(username=username).exists()
+
+    if email_exists or username_exists:
+        return await User.get(email=email)
+    else:
+        return await User.create(
+            username="username",
+            email="email@email.com",
+            first_name="Test",
+            email_verified=True,
+            hashed_password=hashed_password,
+        )

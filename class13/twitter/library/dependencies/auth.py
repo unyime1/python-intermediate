@@ -23,22 +23,17 @@ async def get_current_user(
 ):
     auth_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Your auth token is invalid."
+        detail="Your auth token is invalid.",
     )
     try:
-        payload = jwt.decode(
-            token, str(SECRET_KEY), algorithms=[ALGORITHM]
-        )
+        payload = jwt.decode(token, str(SECRET_KEY), algorithms=[ALGORITHM])
         user_id = payload.get("user_id")
         expire = payload.get("expire")
 
-        token_data = JWTSchema(
-            user_id=user_id,
-            expire=expire
-        )
+        token_data = JWTSchema(user_id=user_id, expire=expire)
 
         if user_id is None or expire is None:
-            raise auth_exception 
+            raise auth_exception
     except (JWTError, ValidationError):
         raise auth_exception
 
@@ -46,14 +41,14 @@ async def get_current_user(
     if datetime.now(timezone.utc) > token_data.expire:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Your token has expired. Please login."
+            detail="Your token has expired. Please login.",
         )
 
     user = await User.get_or_none(id=token_data.user_id)
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="This user does not exist."
+            detail="This user does not exist.",
         )
 
     return user

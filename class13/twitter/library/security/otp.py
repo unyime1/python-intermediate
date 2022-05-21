@@ -27,12 +27,13 @@ class OTPManager:
             otp = cls.generate_token()
         cls.redis.set(otp, user_id, ex=expires)
         return otp
-    
+
     @classmethod
     def get_otp_user(cls, otp: str):
         """Return the owner of OTP"""
         if cls.redis.exists(otp):
             return cls.redis.get(otp).decode("utf-8")
         return None
+
 
 otp_manager = OTPManager()
