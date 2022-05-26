@@ -1,4 +1,5 @@
 import asyncio
+from datetime import datetime, timezone, timedelta
 
 import pytest
 import redis
@@ -7,12 +8,16 @@ from asgi_lifespan import LifespanManager
 from httpx import AsyncClient
 from tortoise.contrib.fastapi import register_tortoise
 from passlib.context import CryptContext
+from jose import jwt
 
 from server import get_application
 
 from config import DATABASE_URL
+from library.schemas.auth import JWTSchema
 from models.contents import Tweet, Like, Media, Comment
 from models.users import User, Picture
+
+from config import SECRET_KEY, ALGORITHM
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -82,7 +87,7 @@ async def test_user():
     user_password = "testing456"
     hashed_password = pwd_context.hash(user_password)
 
-    username = ("username",)
+    username = "username"
     email = "email@email.com"
 
     email_exists = await User.filter(email=email).exists()
@@ -98,3 +103,23 @@ async def test_user():
             email_verified=True,
             hashed_password=hashed_password,
         )
+
+
+@pytest.fixture
+def authorized_client(
+    client: AsyncClient, test_user
+) -> AsyncClient:
+    """Create authorized client."""
+
+    jwt_data = JWTSchema(user_id=str(test_user.id))
+    to_encode = jwt_data.dict()
+    expire = datetime.now(timezone.utc) + timedelta(days=30)
+    to_encode.update({"expire": str(expire)})
+
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+    client.headers = {
+        **client.headers,
+        "Authorization": f"Bearer {encoded_jwt}",
+    }
+    return client
