@@ -10,11 +10,12 @@ async def get_tweet_by_id_from_path(tweet_id: str = Path(...)):
 
 
 async def check_tweet_permissions(
-    tweet = Depends(get_tweet_by_id_from_path),
-    current_user = Security(get_current_user, scopes=["base"])
+    tweet=Depends(get_tweet_by_id_from_path),
+    current_user=Security(get_current_user, scopes=["base"]),
 ):
+    print(tweet.user_id, current_user.id)
     if tweet.user_id != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="You are not authorized to perform this action."
+            detail="You are not authorized to perform this action.",
         )

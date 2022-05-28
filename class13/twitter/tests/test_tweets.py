@@ -21,13 +21,9 @@ class TestFake:
 
 class TestTweetCreate:
     async def test_create(
-        self,
-        app: FastAPI, 
-        authorized_client: AsyncClient
+        self, app: FastAPI, authorized_client: AsyncClient
     ) -> None:
-        data = {
-            "content": "My very first tweet!"
-        }
+        data = {"content": "My very first tweet!"}
         res = await authorized_client.post(
             app.url_path_for("tweet:create"), json=data
         )
@@ -46,3 +42,19 @@ class TestTweetCreate:
         tweet = await Tweet.get_or_none(id=res_data["id"])
         assert tweet is not None
         assert tweet.content == data["content"]
+
+
+class TestUpdate:
+    async def test_update(
+        self, app: FastAPI, authorized_client: AsyncClient, test_tweet
+    ) -> None:
+
+        res = await authorized_client.put(
+            app.url_path_for("tweet:update", tweet_id=test_tweet.id),
+            json={"content": "My updated tweet"},
+        )
+        assert res.status_code == 200
+        tweet = await Tweet.get(id=test_tweet.id)
+
+        assert tweet.content != "My very first tweet!"
+        assert tweet.content == "My updated tweet"

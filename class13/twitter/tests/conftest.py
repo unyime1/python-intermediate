@@ -105,10 +105,8 @@ async def test_user():
         )
 
 
-@pytest.fixture
-def authorized_client(
-    client: AsyncClient, test_user
-) -> AsyncClient:
+@pytest.fixture()
+def authorized_client(client: AsyncClient, test_user) -> AsyncClient:
     """Create authorized client."""
 
     jwt_data = JWTSchema(user_id=str(test_user.id))
@@ -123,3 +121,8 @@ def authorized_client(
         "Authorization": f"Bearer {encoded_jwt}",
     }
     return client
+
+
+@pytest.fixture()
+async def test_tweet(test_user):
+    return await Tweet.create(user=test_user, content="test content")
