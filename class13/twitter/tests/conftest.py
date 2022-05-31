@@ -30,7 +30,7 @@ def app() -> FastAPI:
     return app
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="class")
 async def client(app: FastAPI) -> AsyncClient:
     async with LifespanManager(app):
         async with AsyncClient(
@@ -108,7 +108,6 @@ async def test_user():
 @pytest.fixture()
 def authorized_client(client: AsyncClient, test_user) -> AsyncClient:
     """Create authorized client."""
-
     jwt_data = JWTSchema(user_id=str(test_user.id))
     to_encode = jwt_data.dict()
     expire = datetime.now(timezone.utc) + timedelta(days=30)

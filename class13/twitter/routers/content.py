@@ -1,3 +1,5 @@
+from typing import List
+
 from fastapi import APIRouter, status, Security, Path, Depends, HTTPException
 
 from library.schemas.content import (
@@ -6,9 +8,10 @@ from library.schemas.content import (
     TweetUpdate,
     CommentCreate,
     CommentPublic,
+    TweetGetPublic
 )
 from library.dependencies.auth import get_current_user
-from models.contents import Tweet, Media, Comment
+from models.contents import Tweet, Comment, Like
 from library.dependencies.content import check_tweet_permissions
 
 
@@ -108,3 +111,59 @@ async def delete_comment(
             detail="You are not authorized to delete this comment."
         )
     await comment.delete()
+
+
+@router.post(
+    "/like/{tweet_id}/",
+    name="tweet:like",
+    status_code=status.HTTP_200_OK,
+    description="Like Tweet."
+)
+async def like_tweet(
+    tweet_id: str = Path(...),
+    current_user=Security(get_current_user, scopes=["base"]),   
+):
+    tweet = await Tweet.get_or_none(id=tweet_id)
+    if tweet is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="This tweet does not exist."
+        )
+    await Like.create(
+        tweet_id=tweet.id,
+        user=current_user
+    )
+
+
+@router.delete(
+    "/unlike/{like_id}/",
+    name="tweet:unlike",
+    status_code=status.HTTP_200_OK,
+    description="Unlike Tweet."
+)
+async def unlike_tweet(
+    like_id: str = Path(...),
+    current_user=Security(get_current_user, scopes=["base"]),   
+):
+    like = await Like.get_or_none(id=like_id)
+
+    if like is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="This like does not exist."
+        )
+    await like.delete()
+
+
+@router.get(
+    "/get-tweets/{user_id}/",
+    name="tweet:get_tweets",
+    status_code=status.HTTP_200_OK,
+    description="Get Tweet.",
+    response_model=List[TweetGetPublic]
+)
+async def get_tweet(
+    user_id: str = Path(...),
+    current_user = Security(get_current_user, scopes=["base"]),   
+):
+    pass

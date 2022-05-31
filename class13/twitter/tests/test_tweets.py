@@ -58,3 +58,19 @@ class TestUpdate:
 
         assert tweet.content != "My very first tweet!"
         assert tweet.content == "My updated tweet"
+
+
+class TestTweetDelete:
+    async def test_tweet_delete(
+        self,
+        app: FastAPI,
+        authorized_client: AsyncClient,
+        test_tweet
+    ) -> None:
+        """Test tweet deletion."""
+        response = await authorized_client.delete(
+            app.url_path_for("tweet:delete", tweet_id=test_tweet.id)
+        )
+        assert response.status_code == status.HTTP_200_OK
+        tweet = await Tweet.get_or_none(id=test_tweet.id)
+        assert tweet is None
