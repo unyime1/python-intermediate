@@ -39,8 +39,8 @@ class TweetGetPublic(TweetPublic):
     likes: Optional[List[LikePublic]] = []
 
     @validator("comments", pre=True)
-    def _iter_comment_list(cls, v):
-        return list(v)
+    def _iter_comment_list(cls, data):
+        return list(data)
 
     @validator("likes", pre=True)
     def _iter_likes_list(cls, v):
