@@ -26,3 +26,12 @@ class Picture(BaseModel):
     url = fields.CharField(max_length=500, null=True)
     filename = fields.CharField(max_length=200, null=True)
     filesize = fields.CharField(max_length=100, null=True)
+
+
+class Follows(BaseModel):
+    follower = fields.ForeignKeyField(
+        "models.User", related_name="follower", null=True
+    )
+    followee = fields.ForeignKeyField(
+        "models.User", related_name="followee", null=True
+    )

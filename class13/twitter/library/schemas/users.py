@@ -1,5 +1,7 @@
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel, Field
+
+from library.schemas.register import UserPublic
 
 
 class UserUpdate(BaseModel):
@@ -9,3 +11,11 @@ class UserUpdate(BaseModel):
     day_of_birth: Optional[str] = Field(None, max_length=15)
     month_of_birth: Optional[str] = Field(None, max_length=15)
     year_of_birth: Optional[str] = Field(None, max_length=15)
+
+
+class FollowStatsPublic(BaseModel):
+    followers: Optional[List[UserPublic]] = []
+    followees: Optional[List[UserPublic]] = []
+
+    class Config:
+        orm_mode=True
